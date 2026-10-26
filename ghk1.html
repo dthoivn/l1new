@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Đề kiểm tra giữa học kỳ I - Tin học lớp 1</title>
+<style>
+:root{--blue:#2563eb;--dark:#1d4ed8;--ink:#172033;--muted:#5b6475;--line:#dbe3ef;--bg:#f3f7fc;--good:#15803d;--bad:#b91c1c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.55 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:20px 14px 40px}
+header{background:linear-gradient(135deg,#1d4ed8,#60a5fa);color:white;padding:24px;border-radius:18px;box-shadow:0 8px 24px #1d4ed822}
+header h1{margin:0 0 8px;font-size:clamp(1.4rem,4vw,2rem);line-height:1.25}header p{margin:4px 0}
+.pill{display:inline-block;background:#ffffff26;border:1px solid #ffffff55;border-radius:999px;padding:4px 10px;font-size:.9rem;margin-top:10px}
+.panel{background:white;border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:16px;box-shadow:0 3px 12px #0f172a08}
+h2{font-size:1.15rem;margin:0 0 12px}.student-grid{display:grid;grid-template-columns:2fr 1fr;gap:12px}
+label.field{display:block;font-weight:700}input[type=text]{display:block;width:100%;margin-top:6px;border:1px solid #b9c6d8;border-radius:10px;padding:12px;font:inherit;background:#fff}\ninput:focus-visible,button:focus-visible,.option:focus-within{outline:3px solid #93c5fd;outline-offset:2px}
+.question{border:1px solid var(--line);border-radius:14px;padding:16px;margin:14px 0}.q-title{margin:0 0 12px;font-weight:750}.q-number{color:var(--blue)}
+.options{display:grid;gap:9px}.option{display:flex;gap:10px;align-items:flex-start;border:1px solid #d9e2ef;border-radius:11px;padding:12px;cursor:pointer}
+.option:hover{background:#f5f8ff;border-color:#9ab8f5}.option:has(input:checked){background:#eff6ff;border-color:var(--blue)}
+.option input{margin-top:7px;accent-color:var(--blue);flex:0 0 auto;transform:scale(1.15)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;margin-top:18px}
+button{border:0;border-radius:11px;padding:12px 18px;font:inherit;font-weight:750;cursor:pointer}button:disabled{opacity:.5;cursor:not-allowed}.primary{background:var(--blue);color:white}.secondary{background:#e8eef8;color:#1e293b}
+.hint{color:var(--muted);font-size:.9rem;margin:10px 0 0}.status{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}.time{font-size:1.2rem;font-weight:800;font-variant-numeric:tabular-nums}.time.warning{color:var(--bad)}
+.progress-track{height:10px;background:#e5edf8;border-radius:99px;overflow:hidden;margin-top:10px}.progress-bar{height:100%;width:100%;background:var(--blue);transition:width .3s linear,background .3s}
+#result{display:none}.result-good{color:var(--good);font-weight:800}.result-bad{color:var(--bad);font-weight:800}
+footer{text-align:center;color:var(--muted);font-size:.85rem;margin-top:20px}
+@media(max-width:600px){.student-grid{grid-template-columns:1fr}.panel{padding:14px}header{padding:19px}.status{grid-template-columns:1fr}}
+@media print{body{background:white}.actions,#timerPanel,footer{display:none!important}.panel,header,.question{box-shadow:none;break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1>BÀI KIỂM TRA GIỮA HỌC KỲ I<br>TIN HỌC LỚP 1</h1>
+<p>Năm học 2026–2027</p>
+<p>Bộ sách: Kết nối tri thức với cuộc sống</p>
+<span class="pill">10 câu trắc nghiệm · 10 điểm · 30 phút</span>
+</header>
+<section class="panel">
+<h2>Thông tin học sinh</h2>
+<div class="student-grid">
+<label class="field">Họ và tên<input id="studentName" type="text" placeholder="Ví dụ: Nguyễn An" autocomplete="name" maxlength="100" required></label>
+<label class="field">Lớp<input id="studentClass" type="text" placeholder="Ví dụ: 1A" maxlength="20" required></label>
+</div>
+<p class="hint">Em hãy nhờ thầy cô hoặc người lớn đọc câu hỏi nếu cần. Mỗi câu chỉ chọn một đáp án: A hoặc B.</p>
+</section>
+<section class="panel" id="timerPanel">
+<div class="status"><div><h2 style="margin:0">Thời gian làm bài</h2><div class="hint" id="answeredLabel">Đã trả lời 0/10 câu</div></div><div class="time" id="timeText" aria-live="polite">30:00</div></div>
+<div class="progress-track" role="progressbar" aria-label="Thời gian còn lại" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" id="timeProgress"><div class="progress-bar" id="timeBar"></div></div>
+</section>
+<form class="panel" id="quizForm">
+<h2>Phần trắc nghiệm</h2>
+<div id="questions"></div>
+<div class="actions"><button class="primary" type="submit" id="submitBtn">Nộp bài</button><button class="secondary" type="button" onclick="window.print()">In đề</button></div>
+<p class="hint">Mỗi câu đúng được 1 điểm. Em kiểm tra lại các lựa chọn trước khi nộp bài nhé!</p>
+</form>
+<section class="panel" id="result" aria-live="polite"></section>
+<footer>Đề luyện tập tham khảo dành cho học sinh lớp 1.</footer>
+</div>
+<script>
+const QUESTIONS = [
+{q:"Thiết bị nào dùng để nhìn thấy hình ảnh và chữ trên máy tính?",a:["Màn hình","Cái cặp"],correct:0},
+{q:"Thiết bị nào giúp em gõ chữ và số vào máy tính?",a:["Loa","Bàn phím"],correct:1},
+{q:"Chuột máy tính thường dùng để làm gì?",a:["Điều khiển con trỏ và chọn đồ vật trên màn hình","Uống nước"],correct:0},
+{q:"Khi sử dụng máy tính, em nên ngồi như thế nào?",a:["Ngồi ngay ngắn, giữ khoảng cách phù hợp","Nằm sát màn hình"],correct:0},
+{q:"Trước khi bật hoặc tắt máy tính ở trường, em nên làm gì?",a:["Tự ý rút dây điện","Làm theo hướng dẫn của thầy cô"],correct:1},
+{q:"Khi tay đang ướt, em có nên chạm vào dây điện hoặc ổ cắm máy tính không?",a:["Không","Có"],correct:0},
+{q:"Muốn di chuyển con trỏ trên màn hình bằng chuột, em thường làm gì?",a:["Di chuyển chuột trên mặt bàn","Gõ vào màn hình"],correct:0},
+{q:"Khi học máy tính ở phòng tin học, em nên làm gì?",a:["Chạy nhảy giữa các bàn","Giữ gìn thiết bị và làm theo nội quy"],correct:1},
+{q:"Nếu máy tính có dấu hiệu bất thường, em nên làm gì?",a:["Báo cho thầy cô","Tự tháo máy ra xem"],correct:0},
+{q:"Thông tin nào sau đây có thể giúp em biết hôm nay trời mưa?",a:["Bản tin dự báo thời tiết","Màu của chiếc bút"],correct:0}
+];
+const form=document.getElementById('quizForm'), questionsEl=document.getElementById('questions');
+questionsEl.innerHTML=QUESTIONS.map((q,i)=>`<fieldset class="question"><legend class="q-title"><span class="q-number">Câu ${i+1}.</span> ${q.q}</legend><div class="options">${q.a.map((v,j)=>`<label class="option"><input type="radio" name="q${i}" value="${j}"><span><strong>${String.fromCharCode(65+j)}.</strong> ${v}</span></label>`).join('')}</div></fieldset>`).join('');
+function updateCount(){let n=QUESTIONS.filter((q,i)=>form.querySelector('input[name="q'+i+'"]:checked')).length;document.getElementById('answeredLabel').textContent=`Đã trả lời ${n}/10 câu`;}
+form.addEventListener('change',updateCount);
+const DURATION_SECONDS=30*60;
+let remaining=DURATION_SECONDS, submitted=false, submittedAt=null, finalScore=0, finalAnswers=[];
+const $=id=>document.getElementById(id);
+const timer=setInterval(updateTimer,1000);
+function updateTimer(){
+  if(submitted)return;
+  if(remaining>0)remaining--;
+  const mm=String(Math.floor(remaining/60)).padStart(2,'0');
+  const ss=String(remaining%60).padStart(2,'0');
+  $('timeText').textContent=mm+':'+ss;
+  const pct=Math.max(0,remaining/DURATION_SECONDS*100);
+  $('timeBar').style.width=pct+'%';
+  $('timeProgress').setAttribute('aria-valuenow',Math.round(pct));
+  if(remaining<=300){$('timeText').classList.add('warning');$('timeBar').style.background='#dc2626';}
+  if(remaining<=0){clearInterval(timer);finish(true);}
+}
+function cleanFilenamePart(value){
+  return String(value||'').trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/đ/g,'d').replace(/Đ/g,'D').replace(/[^a-zA-Z0-9_-]+/g,'_').replace(/^_+|_+$/g,'');
+}
+function buildResultData(name,cl,details,score){
+  return {
+    hoTen:name, lop:cl, diem:Number(score.toFixed(2)), tongDiem:10,
+    diemTracNghiem:Number(score.toFixed(2)), tongSoCauDung:details.filter(d=>d.ok).length,
+    tongSoCauSai:details.filter(d=>!d.ok).length,
+    chiTietTracNghiem:details.map(d=>({
+      cauSo:d.i, noiDung:QUESTIONS[d.i-1].q,
+      dapAnDaChon:d.chosen<0?null:{kyHieu:String.fromCharCode(65+d.chosen),noiDung:QUESTIONS[d.i-1].a[d.chosen]},
+      dapAnDung:{kyHieu:String.fromCharCode(65+d.correct),noiDung:QUESTIONS[d.i-1].a[d.correct]},
+      trangThai:d.ok?'dung':(d.chosen<0?'chua_tra_loi':'sai'),
+      dung:d.ok,diemDat:d.ok?1:0,diemToiDa:1
+    })),
+    thoiGianNop:submittedAt
+  };
+}
+async function saveResult(data,name,cl){
+  const baseName=(cleanFilenamePart(name)||'hoc_sinh')+'_'+(cleanFilenamePart(cl)||'chua_ro_lop');
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json;charset=utf-8'});
+  if('showDirectoryPicker' in window){
+    try{
+      const dirHandle=await window.showDirectoryPicker({mode:'readwrite',id:'quiz-json-save',startIn:'documents'});
+      const fileHandle=await dirHandle.getFileHandle(baseName+'.json',{create:true});
+      const writable=await fileHandle.createWritable();
+      await writable.write(blob);await writable.close();
+      alert('Đã lưu bài làm: '+baseName+'.json');return;
+    }catch(err){
+      if(err&&err.name==='AbortError')return;
+      console.warn('Không dùng được hộp thoại chọn thư mục; chuyển sang tải xuống.',err);
+    }
+  }
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download=baseName+'.json';document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+  alert('Đã tạo tệp JSON bài làm. Nếu chưa thấy tệp, hãy kiểm tra thư mục tải xuống của trình duyệt.');
+}
+function finish(auto=false){
+  if(submitted)return;
+  const name=$('studentName').value.trim(),cl=$('studentClass').value.trim();
+  if(!auto&&(!name||!cl)){alert('Em hãy điền họ tên và lớp trước khi nộp bài nhé.');(!name?$('studentName'):$('studentClass')).focus();return;}
+  if(!auto&&!confirm('Em chắc chắn muốn nộp bài chứ? Sau khi nộp sẽ không thể sửa đáp án.'))return;
+  submitted=true;submittedAt=new Date().toISOString();clearInterval(timer);
+  finalAnswers=QUESTIONS.map((q,i)=>{const sel=form.querySelector('input[name="q'+i+'"]:checked'),v=sel?Number(sel.value):-1;return {i:i+1,ok:v===q.correct,chosen:v,correct:q.correct};});
+  finalScore=finalAnswers.reduce((sum,d)=>sum+(d.ok?1:0),0);
+  const details=finalAnswers,score=finalScore;
+  form.querySelectorAll('input,button').forEach(x=>x.disabled=true);
+  const r=$('result');r.style.display='block';
+  r.innerHTML=`<h2>Kết quả bài làm</h2><p>Họ và tên: <strong>${escapeHtml(name||'Chưa điền')}</strong> · Lớp: <strong>${escapeHtml(cl||'Chưa điền')}</strong></p><p class="result-good">Điểm trắc nghiệm: ${score}/10</p><p>Em trả lời đúng ${score} câu và chưa đúng hoặc bỏ trống ${10-score} câu.</p><h2>Đáp án tham khảo</h2>${details.map(d=>`<p>Câu ${d.i}: Đáp án ${String.fromCharCode(65+QUESTIONS[d.i-1].correct)} — <span class="${d.ok?'result-good':'result-bad'}">${d.ok?'Đúng':'Chưa đúng'}</span></p>`).join('')}<div class="actions"><button class="secondary" type="button" onclick="window.print()">In kết quả</button></div>`;
+  r.scrollIntoView({behavior:'smooth'});
+  saveResult(buildResultData(name,cl,details,score),name,cl);
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+form.addEventListener('submit',e=>{e.preventDefault();finish(false);});
+</script>
+</body>
+</html>
